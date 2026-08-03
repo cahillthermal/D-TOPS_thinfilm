@@ -24,43 +24,43 @@ ii=sqrt(-1);
 f = logspace(log10(2e3),log10(200e3),40)'; % modulation frequency (Hz)
 
 % lens
-lens_magnification=2;                   % e.g., 5 for 5x lens; 10 for 10x lens
-lens_transmittance = 0.90; % transmittance of lens for pump laser, 0.93 for 5x; 0.87 for 10x;  0.75 for 20x. 0.86 is cryostat window trans
+lens_magnification=10;                   % e.g., 5 for 5x lens; 10 for 10x lens
+lens_transmittance = 0.80; % transmittance of objective lens for pump beam, 0.80 for 2x; 0.88 for 5x; 0.85 for 10x; 0.75 for 20x
 focal_length = 5/lens_magnification*40e-3; % focal length of the objective lens
 
-% laser spot size and beam offset
-r_rms=5/lens_magnification*12.5e-6;     % root-mean-square focused pump and probe beam 1/e^2 radius (m)
-xoffset=5/lens_magnification*12.6e-6;   % Beam offset (m); pump beam moved downwards by setting 13um move of the gimbal mount
-C_probe = 0.65;                         % calibrated using CaF_2; depends on the ratio of xoffset and w_rms
-w_1_d = 0.87e-3;                        % probe beam 1/e^2 radius at the detector
+% optical beam spot size and beam offset
+r_rms=5/lens_magnification*12.8e-6;     % root-mean-square focused pump and probe beam 1/e^2 radius (m)
+xoffset=5/lens_magnification*13.5e-6;   % Beam offset (m); pump beam moved laterally by 9.2 um move of the actuator on the gimbal mount
+C_probe = 0.90;                         % 0.90 approximately for TOPS 2.0.
+w_1_d = 0.90e-3;                        % probe beam 1/e^2 radius at the detector, 0.90 for TOPS 2.0
 
-% set laser power
-incident_pump=4e-3;        % avarage power of digital power (square wave) pump before lens (W)
+% set pump beam power
+incident_pump=4e-3;        % avarage power of square wave modulated pump at the bfp of objective (W)
 
-% absorbance laser power
-% Index of refraction of metal coating at the wavelength of the pump laser
+% absorbance of pump power
+% Index of refraction of metal coating at the wavelength of the pump beam
 n_metal=2.9; % for Al at 780 nm (from Mathewson and Myers):
 k_metal=8.2;
 sample_reflectance=abs(n_metal-1+(1i)*k_metal)^2/abs(n_metal+1+(1i)*k_metal)^2; % reflectance of the sample surface
 %sample_absorbance=1-sample_reflectance;  % absorbance of sample surface
-sample_absorbance=0.4;
-A_pump=incident_pump*lens_transmittance*sample_absorbance*(4.0/pi); % Amplitude of the primary cosine component of the absorbed pump laser
+sample_absorbance=0.4;  % 0.4 is for NbV; index of NbV is n=2.6; k=3.6
+A_pump=incident_pump*lens_transmittance*sample_absorbance*(4.0/pi); % Amplitude of the fundamental Fourier component of the absorbed pump beam
 
 flag_vacuum = 1; % 1 for in air; 0 for in vacuum
 
-% 1: Al or NbV coating
-sigma_1 = 20; % thermal conductivity of Al film
-L_1 = 75e-9; % thickness of Al film
+% 1: Al, NbV, Ni, or other metal film coating
+sigma_1 = 20; % thermal conductivity of metal film; Al typically 150 W/(m K); NbV 20 W/(m K)
+L_1 = 60e-9; % thickness of metal
 
-% % 2: thin film 
-L_2 = 29.5e-6; % thickness
-sigma_2_r = 25; % thermal conductivity
-sigma_2_z = 25;
+% % 2: thin film example for elastically isotropic material with Poisson ratio of 0.3, ratio of C11, C12, C44 is 7:3:2
+L_2 = 3e-6; % thickness
+sigma_2_r = 0.3; % thermal conductivity
+sigma_2_z = 0.2;
 capac_2 = 2.36e6; % volumetric heat capacity
-rho_2 = 1.0e3; % mass denstiy
-E_2 = 200e9; % Young's modulus
-niu_2 = 0.26; % Poisson's ratio
-alphaT_2 = 2e-6; % linear coefficient of thermal expansion
+rho_2 = 1.0e3; % mass density doesn't play a role because sound velocity is high but is included in the calculation
+E_2 = 10e9; % Young's modulus
+niu_2 = 0.30; % Poisson's ratio
+alphaT_2 = 100e-6; % linear coefficient of thermal expansion
 
 % % 3: substrate (fused silica is used as example here)
 % sigma_3 = 1.3;
@@ -96,7 +96,7 @@ C44_0_3 = (C11_0_3-C12_0_3)/2; % elastic constant C44 (Pa);
 %% parameters by default
 
 % properties of air at room temperature
-sigma_4 = 0.028;  % thermal conductivity (W/m-K)
+sigma_4 = 0.026;  % thermal conductivity (W/m-K)
 capac_4 = 1192; % volumetric heat capacity (J/m^3-K)
 Dif_4 = sigma_4/capac_4;
 dndT_4 = -9e-7; % thermo-optic coefficient dn/dT (K^(-1))
@@ -118,7 +118,7 @@ alphaT_1 = 7.9e-6; % linear coefficient of thermal expansion (K^(-1)), Nb 7.3e-6
 capac_1 = 2.65e6; % volumetric heat capacity (J/m^3-K)
 %coef_intf_rfl = 0;
 % coef_intf_rfl is defined by coef_intf_rfl = -lambda_1/(4*pi)*dphase(r)/dT
-% where lambda_1 is wavelength of probe laser
+% where lambda_1 is wavelength of probe beam
 % r is the reflection coefficient
 % for optically opaque Al film (thickness above 30 nm) in air:
 % coef_intf_rfl = 0 was found experimentally
@@ -563,7 +563,7 @@ end
 V_SUM = mean(V_SUM_data)*4.0;
 
 % calculate the "leaking" data for correction of the frequency response due
-% to the imperfection of pump modulation and detector response
+% to the imperfection of pump modulation and detector response; these values are for TOPS 2.0
 Amplitude_corrected_3 = -6.08e-09; % 3rd order
 Amplitude_corrected_2 = 1.18e-06; % 2nd order
 Amplitude_corrected_1 = 1.50e-04; % 1st order
