@@ -19,48 +19,48 @@ close all;
 % 2) in-plane gradient of refractive index in the air due to dn/dT
 
 %% parameters:
-FileNames_data = 'apr2226/alon_2x';   % data to compare with
+FileNames_data = 'pmma_si_b';   % data to compare with
 ii=sqrt(-1);
 f = logspace(log10(2e3),log10(200e3),40)'; % modulation frequency (Hz)
 
 % lens
 lens_magnification=10;                   % e.g., 5 for 5x lens; 10 for 10x lens
-lens_transmittance = 0.80; % transmittance of objective lens for pump beam, 0.80 for 2x; 0.88 for 5x; 0.85 for 10x; 0.75 for 20x
+lens_transmittance = 0.87; % transmittance of objective lens for pump beam, 0.80 for 2x; 0.88 for 5x; 0.85 for 10x; 0.75 for 20x
 focal_length = 5/lens_magnification*40e-3; % focal length of the objective lens
 
 % optical beam spot size and beam offset
 r_rms=5/lens_magnification*12.8e-6;     % root-mean-square focused pump and probe beam 1/e^2 radius (m)
 xoffset=5/lens_magnification*13.5e-6;   % Beam offset (m); pump beam moved laterally by 9.2 um move of the actuator on the gimbal mount
 C_probe = 0.90;                         % 0.90 approximately for TOPS 2.0.
-w_1_d = 0.90e-3;                        % probe beam 1/e^2 radius at the detector, 0.90 for TOPS 2.0
+w_1_d = 0.90e-3;                        % probe beam 1/e^2 radius at the detector, 0.90 mm for TOPS 2.0
 
 % set pump beam power
-incident_pump=4e-3;        % avarage power of square wave modulated pump at the bfp of objective (W)
+incident_pump=3e-3;        % average power of square wave modulated pump at the bfp of objective (W)
 
 % absorbance of pump power
 % Index of refraction of metal coating at the wavelength of the pump beam
-n_metal=2.9; % for Al at 780 nm (from Mathewson and Myers):
+n_metal=2.9; % for Al at 780 nm (from Mathewson and Myers) n=2.9; k=8.2
 k_metal=8.2;
 sample_reflectance=abs(n_metal-1+(1i)*k_metal)^2/abs(n_metal+1+(1i)*k_metal)^2; % reflectance of the sample surface
-%sample_absorbance=1-sample_reflectance;  % absorbance of sample surface
-sample_absorbance=0.4;  % 0.4 is for NbV; index of NbV is n=2.6; k=3.6
+sample_absorbance=1-sample_reflectance;  % absorbance of sample surface
+%sample_absorbance=0.4;  % 0.4 is for NbV; index of NbV is n=2.6; k=3.6
 A_pump=incident_pump*lens_transmittance*sample_absorbance*(4.0/pi); % Amplitude of the fundamental Fourier component of the absorbed pump beam
 
 flag_vacuum = 1; % 1 for in air; 0 for in vacuum
 
 % 1: Al, NbV, Ni, or other metal film coating
-sigma_1 = 20; % thermal conductivity of metal film; Al typically 150 W/(m K); NbV 20 W/(m K)
+sigma_1 = 100; % thermal conductivity of metal film; Al typically 150 W/(m K); NbV 20 W/(m K)
 L_1 = 60e-9; % thickness of metal
 
 % % 2: thin film example for elastically isotropic material with Poisson ratio of 0.3, ratio of C11, C12, C44 is 7:3:2
-L_2 = 3e-6; % thickness
-sigma_2_r = 0.3; % thermal conductivity
+L_2 = 400e-9; % thickness
+sigma_2_r = 0.2; % thermal conductivity
 sigma_2_z = 0.2;
-capac_2 = 2.36e6; % volumetric heat capacity
+capac_2 = 1.8e6; % volumetric heat capacity
 rho_2 = 1.0e3; % mass density doesn't play a role because sound velocity is high but is included in the calculation
 E_2 = 10e9; % Young's modulus
 niu_2 = 0.30; % Poisson's ratio
-alphaT_2 = 100e-6; % linear coefficient of thermal expansion
+alphaT_2 = 50e-6; % linear coefficient of thermal expansion
 
 % % 3: substrate (fused silica is used as example here)
 % sigma_3 = 1.3;
@@ -77,7 +77,7 @@ alphaT_2 = 100e-6; % linear coefficient of thermal expansion
 % C44_0_3 = E_3/2/(1+niu_3);
 
 % 3: substrate (Si approximated as being isotropic is used as example here)
-sigma_3 = 140;  % thermal conductivity (W/m-K)
+sigma_3 = 142;  % thermal conductivity (W/m-K)
 capac_3 = 1.64e6; % volumetric heat capacity (J/m^3-K)
 rho_3 = 2.33e3; % mass density (kg/m^3)
 alphaT_3 = 2.6e-6; % linear coefficient of thermal expansion
@@ -102,20 +102,20 @@ Dif_4 = sigma_4/capac_4;
 dndT_4 = -9e-7; % thermo-optic coefficient dn/dT (K^(-1))
 
 % properties of Al
-%C11_0_1 = 107.4e9; % elastic constant C11 (Pa)
-%C12_0_1 = 60.5e9; % elastic constant C12 (Pa)
-%C44_0_1 = 28.3e9; % elastic constant C44 (Pa)
-%rho_1 = 2.70e3; % mass density (kg/m^3)
-%alphaT_1 = 23e-6; % linear coefficient of thermal expansion (K^(-1))
-%capac_1 = 2.42e6; % volumetric heat capacity (J/m^3-K)
+C11_0_1 = 107.4e9; % elastic constant C11 (Pa)
+C12_0_1 = 60.5e9; % elastic constant C12 (Pa)
+C44_0_1 = 28.3e9; % elastic constant C44 (Pa)
+rho_1 = 2.70e3; % mass density (kg/m^3)
+alphaT_1 = 23e-6; % linear coefficient of thermal expansion (K^(-1))
+capac_1 = 2.42e6; % volumetric heat capacity (J/m^3-K)
 
 % properties of Nb-V
-C11_0_1 = 242e9; % elastic constant C11 (Pa)
-C12_0_1 = 129e9; % elastic constant C12 (Pa)
-C44_0_1 = 28e9; % elastic constant C44 (Pa)
-rho_1 = 6.1e3; % mass denstiy (kg/m^3)
-alphaT_1 = 7.9e-6; % linear coefficient of thermal expansion (K^(-1)), Nb 7.3e-6/V 8.4e-6
-capac_1 = 2.65e6; % volumetric heat capacity (J/m^3-K)
+% C11_0_1 = 242e9; % elastic constant C11 (Pa)
+% C12_0_1 = 129e9; % elastic constant C12 (Pa)
+% C44_0_1 = 28e9; % elastic constant C44 (Pa)
+% rho_1 = 6.1e3; % mass denstiy (kg/m^3)
+% alphaT_1 = 7.9e-6; % linear coefficient of thermal expansion (K^(-1)), Nb 7.3e-6/V 8.4e-6
+% capac_1 = 2.65e6; % volumetric heat capacity (J/m^3-K)
 %coef_intf_rfl = 0;
 % coef_intf_rfl is defined by coef_intf_rfl = -lambda_1/(4*pi)*dphase(r)/dT
 % where lambda_1 is wavelength of probe beam
