@@ -91,6 +91,7 @@ D-TOPS_thinfilm/
 ├── GetData_out_in_ratio_f_VSUM.py      # Experimental data loader (.txt)
 ├── datacorrection_complex_leaking.py   # Instrumental phase/crosstalk correction
 ├── simpson_inte.py                     # Simpson rule integration for Hankel transforms
+├── matlab_legacy_code/                 # Legacy MATLAB implementation (for reference)
 ├── a1.txt                              # Experimental dataset (Sample A1)
 └── pmma_si_b.txt                       # Experimental dataset (PMMA on Si)
 ```
