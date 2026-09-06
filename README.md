@@ -193,10 +193,10 @@ Experimental data files (such as [`a1.txt`](a1.txt) and [`pmma_si_b.txt`](pmma_s
 
 The lock-in amplifier signal $V_{\text{signal}}$ is related to the calculated complex probe beam deflection angle $\theta$ by:
 
-$$V_{\text{signal}} = \text{det\_factor} \times \theta \times \frac{V_{\text{SUM}}}{\sqrt{2}}$$
+$$V_{\text{signal}} = \text{det\\_factor} \times \theta \times \frac{V_{\text{SUM}}}{\sqrt{2}}$$
 
 where the geometric detection conversion factor is defined as:
 
-$$\text{det\_factor} = \sqrt{\frac{8}{\pi}} \left(\frac{f_{\text{length}}}{w_{1d}}\right)$$
+$$\text{det\\_factor} = \sqrt{\frac{8}{\pi}} \left(\frac{f_{\text{length}}}{w_{1d}}\right)$$
 
 Here $f_{\text{length}}$ is the objective focal length and $w_{1d}$ is the probe beam radius at the detector. Hankel transformation integrals over spatial frequency $p$ are numerically evaluated using Simpson quadrature routines.
