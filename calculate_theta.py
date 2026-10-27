@@ -15,14 +15,14 @@ def calculate_theta(
     E_2=10e9,
     niu_2=0.30,
 # parameters for layer 1 the metal film, typicall Al or NbV or Ni
-    sigma_1=13.0,  # 130 for Jon Malen Al film
+    sigma_1=130.0,  # 130 for Jon Malen Al film
     L_1=50e-9,
     capac_1=2.42e6,  #2.65 fo NbV
     rho_1=1e3,   # not important
     alphaT_1=20e-6,
-    C11_0_1=242e9,  # for NbV 242, 129, 28 GPa
-    C12_0_1=129e9,
-    C44_0_1=28e9,
+    C11_0_1=107e9,  # for NbV 242, 129, 28 GPa
+    C12_0_1=60e9,
+    C44_0_1=28e9,   # for Al 107, 60, 28 GPa
 # parameters for layer 3 the substrate, typically silicon
     sigma_3=142.0,
     capac_3=1.64e6,

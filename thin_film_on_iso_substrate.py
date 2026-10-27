@@ -11,7 +11,7 @@ from GetData_out_in_ratio_f_VSUM import GetData_out_in_ratio_f_VSUM
 def run_simulation(
     FileNames_data='pmma_si_b',
     fit_parameters=True,
-    fit_freq_range=(1e4,2e5),
+    fit_freq_range=(3e4,2e5),
     sigma_2_z=0.17,
     alphaT_2=40e-6,
     plot_results=True,
@@ -247,23 +247,32 @@ if __name__ == '__main__':
     parser.add_argument('--fit', type=str2bool, nargs='?', const=True, default=None, help='Fit sigma_2_z and alphaT_2 (e.g. --fit True or --fit False)')
     parser.add_argument('--fmin', type=float, default=None, help='Minimum frequency for fitting (Hz)')
     parser.add_argument('--fmax', type=float, default=None, help='Maximum frequency for fitting (Hz)')
-    parser.add_argument('--sigma_2_z', type=float, default=0.17, help='Initial/fixed thin film thermal conductivity (W/m-K)')
-    parser.add_argument('--alphaT_2', type=float, default=40e-6, help='Initial/fixed thin film thermal expansion coefficient (1/K)')
+    parser.add_argument('--sigma_2_z', type=float, default=None, help='Initial/fixed thin film thermal conductivity (W/m-K)')
+    parser.add_argument('--alphaT_2', type=float, default=None, help='Initial/fixed thin film thermal expansion coefficient (1/K)')
 
     args = parser.parse_args()
 
     data_file = args.data.strip() if (args.data is not None and args.data.strip()) else default_data
 
-    fit_range = None
-    if args.fmin is not None or args.fmax is not None:
-        fit_range = (args.fmin, args.fmax)
-
     run_kwargs = {
         'FileNames_data': data_file,
-        'fit_freq_range': fit_range,
-        'sigma_2_z': args.sigma_2_z,
-        'alphaT_2': args.alphaT_2,
     }
+
+    if args.fmin is not None or args.fmax is not None:
+        try:
+            line14_range = inspect.signature(run_simulation).parameters['fit_freq_range'].default
+        except Exception:
+            line14_range = getattr(run_simulation, '__defaults__', (None, None, None))[2]
+        default_fmin = line14_range[0] if (isinstance(line14_range, (tuple, list)) and len(line14_range) == 2) else None
+        default_fmax = line14_range[1] if (isinstance(line14_range, (tuple, list)) and len(line14_range) == 2) else None
+        f_min = args.fmin if args.fmin is not None else default_fmin
+        f_max = args.fmax if args.fmax is not None else default_fmax
+        run_kwargs['fit_freq_range'] = (f_min, f_max)
+
+    if args.sigma_2_z is not None:
+        run_kwargs['sigma_2_z'] = args.sigma_2_z
+    if args.alphaT_2 is not None:
+        run_kwargs['alphaT_2'] = args.alphaT_2
     if args.fit is not None:
         run_kwargs['fit_parameters'] = args.fit
 
