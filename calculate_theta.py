@@ -9,18 +9,18 @@ def calculate_theta(
     sigma_2_z=0.17,
     alphaT_2=40e-6,
     sigma_2_r=None,
-    L_2=200e-9,
-    capac_2=1.4e6,
+    L_2=420e-9,
+    capac_2=1.7e6,  # 1.7 for PMMA
     rho_2=1.0e3,
     E_2=10e9,
     niu_2=0.30,
 # parameters for layer 1 the metal film, typicall Al or NbV or Ni
-    sigma_1=18.0,
-    L_1=54e-9,
-    capac_1=2.65e6,
-    rho_1=6.1e3,
-    alphaT_1=8e-6,
-    C11_0_1=242e9,
+    sigma_1=13.0,  # 130 for Jon Malen Al film
+    L_1=50e-9,
+    capac_1=2.42e6,  #2.65 fo NbV
+    rho_1=1e3,   # not important
+    alphaT_1=20e-6,
+    C11_0_1=242e9,  # for NbV 242, 129, 28 GPa
     C12_0_1=129e9,
     C44_0_1=28e9,
 # parameters for layer 3 the substrate, typically silicon
@@ -41,7 +41,7 @@ def calculate_theta(
     C_probe=0.90,
     w_1_d=0.90e-3,
     incident_pump=3e-3,
-    sample_absorbance=0.4,
+    sample_absorbance=0.12,  # 0.4 for NbV
 ):
     """
     Calculates complex probe beam deflection angle theta and detection factor for thin film on substrate.

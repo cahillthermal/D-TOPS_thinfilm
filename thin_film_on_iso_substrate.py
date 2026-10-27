@@ -9,7 +9,7 @@ from GetData_out_in_ratio_f_VSUM import GetData_out_in_ratio_f_VSUM
 
 
 def run_simulation(
-    FileNames_data='a1',
+    FileNames_data='pmma_si_b',
     fit_parameters=True,
     fit_freq_range=(1e4,2e5),
     sigma_2_z=0.17,
@@ -42,6 +42,9 @@ def run_simulation(
     dict
         Dictionary containing frequencies, model outputs, experimental data, and fitted parameters.
     """
+    if not FileNames_data or not str(FileNames_data).strip():
+        FileNames_data = 'a1'
+
     fit_info = None
     if fit_parameters:
         fit_info = fit_thin_film(
@@ -215,10 +218,32 @@ def str2bool(v):
 
 
 if __name__ == '__main__':
+    import inspect
+
+    cli_default = 'a1'
+    try:
+        sig_param = inspect.signature(run_simulation).parameters.get('FileNames_data')
+        line12_default = sig_param.default if sig_param is not None else None
+    except Exception:
+        line12_default = getattr(run_simulation, '__defaults__', (None,))[0]
+
+    has_line12_filename = (
+        line12_default is not None
+        and line12_default is not getattr(inspect, 'Parameter', object()).empty
+        and isinstance(line12_default, str)
+        and bool(line12_default.strip())
+    )
+    default_data = line12_default.strip() if has_line12_filename else cli_default
+
     parser = argparse.ArgumentParser(
         description='D-TOPS Thin Film Model Simulation and Parameter Fitting'
     )
-    parser.add_argument('--data', type=str, default='a1', help='Data file name (default: a1)')
+    parser.add_argument(
+        '--data',
+        type=str,
+        default=None,
+        help=f'Data file name (default: {default_data})'
+    )
     parser.add_argument('--fit', type=str2bool, nargs='?', const=True, default=None, help='Fit sigma_2_z and alphaT_2 (e.g. --fit True or --fit False)')
     parser.add_argument('--fmin', type=float, default=None, help='Minimum frequency for fitting (Hz)')
     parser.add_argument('--fmax', type=float, default=None, help='Maximum frequency for fitting (Hz)')
@@ -227,12 +252,14 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    data_file = args.data.strip() if (args.data is not None and args.data.strip()) else default_data
+
     fit_range = None
     if args.fmin is not None or args.fmax is not None:
         fit_range = (args.fmin, args.fmax)
 
     run_kwargs = {
-        'FileNames_data': args.data,
+        'FileNames_data': data_file,
         'fit_freq_range': fit_range,
         'sigma_2_z': args.sigma_2_z,
         'alphaT_2': args.alphaT_2,
